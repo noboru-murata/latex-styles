@@ -1,7 +1,7 @@
 #+TITLE: My Math Style
 #+AUTHOR: Noboru Murata
 #+EMAIL: noboru.murata@gmail.com
-#+DATE: 2021.09.19 18:27:41
+#+DATE: 2023.09.26 14:23:58
 #+STARTUP: hidestars content
 #+OPTIONS: date:t H:4 num:nil toc:nil \n:nil
 #+OPTIONS: @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:t 
@@ -55,7 +55,7 @@
   showonlyrefs,
   showmanualtags,
 }
-\RequirePackage{nicematrix}
+%\RequirePackage{nicematrix}
 #+end_src
 
 * フォント関係
@@ -94,8 +94,9 @@
 * その他
 #+begin_src latex
 %%% misc
-\RequirePackage{algorithm}
-\RequirePackage{algpseudocode}
+% \RequirePackage{algorithm}
+% \RequirePackage{algpseudocode}
+\RequirePackage{algpseudocodex}
 \RequirePackage{fancyvrb}
 \RequirePackage{enumerate}
 #+end_src

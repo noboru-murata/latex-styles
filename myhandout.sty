@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesPackage{myhandout}[2020/02/25, mura's handout style 1.0]
+\ProvidesPackage{myhandout}[2024/07/05, mura's handout style 1.1]
 
 %%% utility
 \RequirePackage{xparse}
@@ -50,6 +50,11 @@
 }
 \ProcessPgfPackageOptions*
 
+%%% my default definitions
+\RequirePackage{mycolor}
+\RequirePackage[lang=\myhandout@lang,face=\myhandout@face]{mymath} 
+\RequirePackage[list=\myhandout@list]{mylist}
+
 %%% language/encoding
 % \RequirePackage{textcomp} % latex3 encoding
 % \RequirePackage[T1]{fontenc}
@@ -64,29 +69,35 @@
 \RequirePackage{polyglossia} % まだ若干あやしい
 
 %%% parse language
-%% for non-japanese
 \setdefaultlanguage{english}
-\setotherlanguage{japanese}
+% \setotherlanguage{japanese} 
 
 \ifdefstring{\myhandout@lang}{jp}{ % for japanese
   \RequirePackage[hiragino-pron]{luatexja-preset}
   \setlength\parindent{1\zw}
-  \setdefaultlanguage{japanese}
-  \let\japanese@capsformat=\relax % 余計なことはさせない
-  \setotherlanguage{english}
+  \setotherlanguage{japanese} % 基本は英語，必要に応じて日本語
+  % 2024/4 cjkfont 回りの対応，いずれ消したい
+  \let\cjkfont=\rmfamily
+  \let\cjkfontsf=\sffamily
+  \let\cjkfonttt=\ttfamily
+  \newfontfamily\cjkfontmg{HiraMaruProN-W4}
+  % \setdefaultlanguage{japanese}
+  % \let\japanese@capsformat=\relax % 余計なことはさせない(いらなくなったっぽい 2024/4)
+  % \setotherlanguage{english}
 }{}
 \ifdefstring{\myhandout@lang}{ja}{ % for yet another japanese
   \RequirePackage[deluxe]{luatexja-preset} 
   \setlength\parindent{1\zw}
-  \setdefaultlanguage{japanese} % for polyglossia
-  \let\japanese@capsformat=\relax % 余計なことはさせない
-  \setotherlanguage{english} % for polyglossia
+  \setotherlanguage{japanese} % 基本は英語，必要に応じて日本語
+  % 2024/4 cjkfont 回りの対応，いずれ消したい
+  \let\cjkfont=\rmfamily
+  \let\cjkfontsf=\sffamily
+  \let\cjkfonttt=\ttfamily
+  \newfontfamily\cjkfontmg{HiraMaruProN-W4}
+  % \setdefaultlanguage{japanese} % for polyglossia
+  % \let\japanese@capsformat=\relax % 余計なことはさせない
+  % \setotherlanguage{english} % for polyglossia
 }{}
-
-%%% my default definitions
-\RequirePackage{mycolor}
-\RequirePackage[lang=\myhandout@lang,face=\myhandout@face]{mymath} 
-\RequirePackage[list=\myhandout@list]{mylist}
 
 %%% index/hyperlink
 \RequirePackage{makeidx}
@@ -162,11 +173,11 @@
   \ifdefstring{\my@rg}{regular}{%
     \ifundef{\mgfamily}%
     {\def\mgfamily{\jfontspec{HiraMaruProN-W4}}}{} % for MacOS X
-    \setkomafont{subject}{\mgfamily\itshape}
-    \setkomafont{title}{\mgfamily\itshape}
-    \setkomafont{subtitle}{\mgfamily\itshape}
-    \setkomafont{author}{\mgfamily\itshape}
-    \setkomafont{date}{\mgfamily\itshape}
+    \setkomafont{subject}{\mgfamily\cjkfontmg\itshape}
+    \setkomafont{title}{\mgfamily\cjkfontmg\itshape}
+    \setkomafont{subtitle}{\mgfamily\cjkfontmg\itshape}
+    \setkomafont{author}{\mgfamily\cjkfontmg\itshape}
+    \setkomafont{date}{\mgfamily\cjkfontmg\itshape}
     \relax
   }{}%
   \ifdefstring{\my@rg}{light}{%

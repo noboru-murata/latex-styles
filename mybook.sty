@@ -1,12 +1,10 @@
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesPackage{mybook}[2020/02/22, mura's book style version 3.0]
+\ProvidesPackage{mybook}[2024/07/02, mura's book style version 3.1]
 
 %%% utility
 \RequirePackage{xparse}
 \RequirePackage{etoolbox}
 \RequirePackage{pgfopts}
-%% \RequirePackage{ifthen} % obsolete
-%% \RequirePackage{regexpatch} % experimental
 
 %%% define and parse options
 \pgfkeys{/mybook/.cd,
@@ -33,15 +31,17 @@
   % default values
   lang = jp, 
   style = tufte,
-  face = newtx,
+  face = default,
   list = none,
 }
 \ProcessPgfPackageOptions*
 
+%%% my default definitions
+\RequirePackage{mycolor}
+\RequirePackage[lang=\mybook@lang,face=\mybook@face]{mymath} 
+\RequirePackage[list=\mybook@list]{mylist}
+
 %%% language/encoding
-% \RequirePackage{textcomp} % latex3 encoding
-% \RequirePackage[T1]{fontenc}
-% \RequirePackage[utf8]{inputenc}
 \RequirePackage{csquotes}
 \DeclareQuoteStyle{japanese}% this is just a copy of American English
   {\textquotedblleft}
@@ -49,32 +49,30 @@
   [0.05em]
   {\textquoteleft}
   {\textquoteright}
-\RequirePackage{polyglossia} % まだ若干あやしい
-
 %%% parse language
+\RequirePackage{polyglossia} % まだ若干あやしい
 %% for non-japanese 
 \setdefaultlanguage{english} % for polyglossia
-\setotherlanguage{japanese} % for polyglossia
-
 \ifdefstring{\mybook@lang}{jp}{ % for japanese
   \RequirePackage[hiragino-pron]{luatexja-preset} % for MacOS X
   \setlength\parindent{1\zw}
-  \setdefaultlanguage{japanese} % for polyglossia
-  \let\japanese@capsformat=\relax % 余計なことはさせない
-  \setotherlanguage{english} % for polyglossia
+  \setotherlanguage{japanese}
+  % 2024/4 cjkfont 回りの対応，いずれ消したい
+  \let\cjkfont=\rmfamily
+  \let\cjkfontsf=\sffamily
+  \let\cjkfonttt=\ttfamily
+  \newfontfamily\cjkfontmg{HiraMaruProN-W4}
 }{}
 \ifdefstring{\mybook@lang}{ja}{ % for yet another japanese
   \RequirePackage[deluxe]{luatexja-preset} 
   \setlength\parindent{1\zw}
-  \setdefaultlanguage{japanese} % for polyglossia
-  \let\japanese@capsformat=\relax % 余計なことはさせない
-  \setotherlanguage{english} % for polyglossia
+  \setotherlanguage{japanese}
+  % 2024/4 cjkfont 回りの対応，いずれ消したい
+  \let\cjkfont=\rmfamily
+  \let\cjkfontsf=\sffamily
+  \let\cjkfonttt=\ttfamily
+  \newfontfamily\cjkfontmg{HiraMaruProN-W4}
 }{}
-
-%%% my default definitions
-\RequirePackage{mycolor}
-\RequirePackage[lang=\mybook@lang,face=\mybook@face]{mymath} 
-\RequirePackage[list=\mybook@list]{mylist}
 
 %%% index/hyperlink
 \RequirePackage{makeidx}
@@ -106,7 +104,6 @@
 %%% page, title and font styles
 %% load tufte setup
 \RequirePackage{mytufte}
-
 %% colors
 \addtokomafont{chapterentrypagenumber}{\color{myDarkBlue}}
 \addtokomafont{chapterentry}{\color{myDarkBlue}}
@@ -116,7 +113,6 @@
 \addtokomafont{subsubsection}{\color{myDarkBlue}}
 \addtokomafont{paragraph}{\color{myDarkBlue}}
 \addtokomafont{subparagraph}{\color{myDarkBlue}}
-
 %% choose from possible styles 
 \DeclareDocumentCommand{\myStyle}{m}{%
   \edef\my@rg{#1}
@@ -165,7 +161,6 @@
     \AtBeginDocument{\myPageLayout{wide}}
   }{}
 }
-
 %% choose from possible chapterstyle
 \DeclareDocumentCommand{\myChapterStyle}{m}{%
   \edef\my@rg{#1}
@@ -201,7 +196,6 @@
   \RedeclareSectionCommand[beforeskip=0cm,afterskip=1cm]{chapter}
   \setlength{\mtocshift}{0mm}
 }
-
 %% margin toc for chapter
 \RequirePackage{etoc} % local tables of contents
 \newcounter{margintocdepth}

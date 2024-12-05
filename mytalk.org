@@ -1,7 +1,7 @@
 #+TITLE: My Talk Style
 #+AUTHOR: Noboru Murata
 #+EMAIL: noboru.murata@gmail.com
-#+DATE: 2022.02.02 10:45:13
+#+DATE: 2024.09.01 21:25:23
 #+STARTUP: hidestars content
 #+OPTIONS: date:t H:4 num:nil toc:nil \n:nil
 #+OPTIONS: @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:t 
@@ -10,12 +10,18 @@
 # C-c C-v t tangle
 
 * ヘッダ
+:PROPERTIES:
+:ID:       0723A838-0437-4E09-874C-1324E145EAAD
+:END:
 #+begin_src latex
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesPackage{mytalk}[2019/04/01, mura's talk style 3.0]
+\ProvidesPackage{mytalk}[2024/07/05, mura's talk style 3.1]
 #+end_src
 
 * オプション処理
+:PROPERTIES:
+:ID:       9A19BAED-9773-411B-A6EC-52BD74F30851
+:END:
 #+begin_src latex
 %%% utility
 \RequirePackage{xparse}
@@ -23,6 +29,9 @@
 \RequirePackage{pgfopts}
 %% \RequirePackage{ifthen} % obsolete
 %% \RequirePackage{regexpatch} % experimental
+\RequirePackage{expl3}
+\RequirePackage{multicol}
+\RequirePackage{luamesh}
 
 %%% define and parse options
 \pgfkeys{/mytalk/.cd,
@@ -63,6 +72,13 @@
   block/color/.style = {block style = color},
   block/greys/.style = {block style = greys},
   block/colors/.style = {block style = colors},
+  %  toc in section papge
+  toc style/.store in = \mytalk@toc,
+  toc/.is choice,
+  toc/none/.style = {toc style = none},
+  toc/nonumbers/.style = {toc style = nonumbers},
+  toc/numbers/.style = {toc style = numbers},
+  toc/ingress/.style = {toc style = ingress},
   % default values
   lang = en,
   font = regular,
@@ -70,11 +86,15 @@
   header = right,
   footer = progress,
   block = grey,
+  toc = none,
 }
 \ProcessPgfPackageOptions*
 #+end_src
 
 * 言語
+:PROPERTIES:
+:ID:       75906852-9F3C-4AE0-AEDC-37B257426F51
+:END:
 #+begin_src latex
 %%% language/encoding
 % \RequirePackage{textcomp} % latex3 encoding
@@ -91,22 +111,44 @@
 % \RequirePackage[main=japanese,english]{babel} % 枯れてる
 
 %%% parse language
+\setdefaultlanguage{english}
 \ifdefstring{\mytalk@lang}{jp}{ % for japanese
   \RequirePackage[hiragino-pron]{luatexja-preset}
   \setlength\parindent{1\zw}
-  \setdefaultlanguage{japanese}
-  \let\japanese@capsformat=\relax % 余計なことはさせない
-  \setotherlanguage{english}
+  \setotherlanguage{japanese} % 基本は英語，必要に応じて日本語
+  % 2024/4 cjkfont 回りの対応，いずれ消したい
+  \let\cjkfont=\rmfamily
+  \let\cjkfontsf=\sffamily
+  \let\cjkfonttt=\ttfamily
+  \newfontfamily\cjkfontmg{HiraMaruProN-W4}
+  % \setdefaultlanguage{japanese}
+  % \let\japanese@capsformat=\relax % 余計なことはさせない
+  % \setotherlanguage{english}
   % font setup
   \setmainjfont[BoldFont=HiraKakuProN-W6]{HiraMaruProN-W4}
   \setsansjfont{HiraKakuProN-W3}
-}{ % for non-japanese
-  \setdefaultlanguage{english}
-  \setotherlanguage{japanese}
-}
+}{}
+\ifdefstring{\mytalk@lang}{ja}{ % for yet another japanese
+  \RequirePackage[deluxe]{luatexja-preset} 
+  \setlength\parindent{1\zw}
+  \setotherlanguage{japanese} % 基本は英語，必要に応じて日本語
+  % 2024/4 cjkfont 回りの対応，いずれ消したい
+  \let\cjkfont=\rmfamily
+  \let\cjkfontsf=\sffamily
+  \let\cjkfonttt=\ttfamily
+  \newfontfamily\cjkfontmg{HiraMaruProN-W4}
+  % \setdefaultlanguage{japanese} % for polyglossia
+  % \let\japanese@capsformat=\relax % 余計なことはさせない
+  % \setotherlanguage{english} % for polyglossia
+  \setmainjfont[BoldFont=HiraKakuProN-W6]{HiraMaruProN-W4}
+  \setsansjfont{HiraKakuProN-W3}
+}{}
 #+end_src
 
 * 自作関数・定義
+:PROPERTIES:
+:ID:       EDCC9355-6F4E-461C-8C3D-DBED75D9CBA4
+:END:
   styleにまとめたので以下は不要
 %% % amstex mymathを整理すること
 %% \RequirePackage{amsthm}
@@ -136,9 +178,84 @@
 \RequirePackage{mycolor}
 \RequirePackage[lang=\mytalk@lang,face=default]{mymath} 
 \RequirePackage{mylist}
+%%% colorized math
+\AtBeginEnvironment{theorem}{%
+  \setbeamercolor{block body}{fg=black,bg=gray!10}
+  \setbeamercolor{block title}{fg=structure,bg=structure!30}
+}
+\AtBeginEnvironment{definition}{%
+  \setbeamercolor{block body}{fg=black,bg=gray!10}
+  \setbeamercolor{block title}{fg=myDarkOrange,bg=myDarkOrange!30}
+}
+\AtBeginEnvironment{corollary}{%
+  \setbeamercolor{block body}{fg=black,bg=gray!10}
+  \setbeamercolor{block title}{fg=structure!80,bg=structure!20}
+}
+
+\RenewDocumentEnvironment{abstract}{}{%
+  \begin{tcolorbox}[boxrule=0pt,frame hidden,sharp corners,enhanced,borderline
+    north={1pt}{0pt}{structure},borderline
+    south={1pt}{0pt}{structure}]
+    \begin{center}\bfseries
+      \abstractname
+    \end{center}\itshape
+  }
+  {%
+  \end{tcolorbox}%
+}%
+
+\RenewDocumentEnvironment{quotation}{o}{%
+  \begin{tcolorbox}[boxrule=0pt,frame hidden,sharp corners,enhanced,borderline west={4pt}{0pt}{structure}]\itshape
+  }
+  {%
+    \IfNoValueTF{#1}{%
+    }{
+      \begin{flushright}
+        \normalfont #1
+      \end{flushright}
+    \end{tcolorbox}%
+  }%
+}
+
+\newcommand\mytalk@info{\raisebox{-1mm}{\tikz{\node[circle,fill=myBlue,align=center,text
+      width=1em,inner sep = 0.0mm]
+      {\rmfamily\itshape\bfseries\color{white} i};}}}
+
+\NewDocumentEnvironment{information}{o}{%
+  \tcbset{leftrule=1mm,rightrule=0mm,toprule=0mm, bottomrule=0mm,%
+    colframe=myBlue,
+    sharp corners,
+    detach title,%
+    before title={\mytalk@info~},
+    fonttitle = \color{black}\bfseries\sffamily,
+    before upper={\tcbtitle\par\medskip}
+  }
+  \IfNoValueTF{#1}{%
+    \begin{tcolorbox}[title=\translate{Information}]
+    }{
+      \begin{tcolorbox}[title=#1]
+      }
+    }%
+    {%
+    \end{tcolorbox}
+  }%
+
+  \NewDocumentEnvironment{remark}{o}{
+   \tcbset{%
+    arc=0pt,outer arc=0pt,colback=gray!10!white,colframe=gray!60!white,
+    boxsep=0pt,left=10pt,right=10pt,top=8pt,bottom=10pt, bottomtitle = 3pt, toptitle=3pt,
+    boxrule=0pt,bottomrule=0.5pt,toprule=0.5pt
+  }
+  \smallskip
+  \begin{tcolorbox}[fonttitle=\bfseries,title={\translate{Remark} \IfNoValueF{#1}{(#1)}}]}%
+  {\end{tcolorbox}\medskip
+}
 #+end_src
 
 * パッケージ
+:PROPERTIES:
+:ID:       DE59876D-63D4-45D6-AEF5-08D4D52D659A
+:END:
   追加するものをまとめること
 #+begin_src latex
 \RequirePackage{appendixnumberbeamer}
@@ -156,6 +273,9 @@ version={4.0},
 #+end_src
 
 * ハイパーリンク 
+:PROPERTIES:
+:ID:       02D39656-1CCC-4AF3-857B-38C08703D2E5
+:END:
 #+begin_src latex
 %%% index/hyperlink
 \RequirePackage{makeidx}
@@ -183,18 +303,24 @@ version={4.0},
 #+end_src
 
 * グラフィクス
+:PROPERTIES:
+:ID:       11F9616D-02F0-4906-8228-F0121D04197A
+:END:
 #+begin_src latex
 %%% graphics
 \RequirePackage{grffile} % graphics file 名の拡張
 \RequirePackage{pgfplots}
 \usepgfplotslibrary{dateplot}
 \RequirePackage{graphicx} % beamer が読み込んでいる?
-\RequirePackage{graphbox}
-\RequirePackage{incgraph}
+\RequirePackage[nobeamer]{graphbox} % beamer の includegraphics と矛盾しないように
+\RequirePackage{incgraph} % ここまで大掛かりなものは必要か?
 #+end_src
 # \graphicspath{{example/},{fig/}}
 
 * 参考文献関係
+:PROPERTIES:
+:ID:       5BFEA95A-19EC-48F5-B957-53ACAA70489B
+:END:
 #+begin_src latex
 %%% reference
 \RequirePackage[%
@@ -211,6 +337,9 @@ version={4.0},
 #+end_src
 
 * 設定関数
+:PROPERTIES:
+:ID:       13F0495B-7C53-4750-A065-BC9274083D54
+:END:
 #+begin_src latex
 %%% font, math, header, footer and block styles
 
@@ -301,9 +430,106 @@ version={4.0},
     \mytalk@blockstyle@color
   }{}%
 }
+
+%% choose from possible toc styles
+\DeclareDocumentCommand{\myTocStyle}{m}{%
+  \edef\my@rg{#1}
+  \ifdefstring{\my@rg}{none}{%
+    \relax
+  }{}%
+  \ifdefstring{\my@rg}{nonumbers}{%
+    \AtBeginSection[]
+    {
+      \bgroup
+      \begin{frame}<beamer>[t,plain]
+        \vspace*{0.4\pageheight}
+        \sectionpage
+        \begin{center}
+          \begin{minipage}{0.5\paperwidth}%
+            \tableofcontents%
+          \end{minipage}
+        \end{center}
+      \end{frame}
+      \egroup
+    }
+  }{}%
+  \ifdefstring{\my@rg}{numbers}{%
+    \setbeamertemplate{section in toc}[square]
+    \AtBeginSection[]
+    {
+      \bgroup
+      \begin{frame}<beamer>[t,plain]
+        \vspace*{0.4\pageheight}
+        \sectionpage
+        \begin{center}
+          \begin{minipage}{0.6\paperwidth}%
+            \begin{multicols}{2}
+              \tableofcontents%
+            \end{multicols}
+          \end{minipage}
+        \end{center}
+      \end{frame}
+      \egroup
+    }
+  }{}%
+  \ifdefstring{\my@rg}{ingress}{%
+    \setbeamertemplate{section in toc}[square]
+    \AtBeginSection[]
+    {
+      \bgroup
+      \setbeamertemplate{background}[ingress]
+      \begin{frame}<beamer>[t,plain]
+        \vspace*{0.4\pageheight}
+        \sectionpage
+        \begin{center}
+          \begin{minipage}{0.6\paperwidth}%
+            \begin{multicols}{2}
+              \tableofcontents%
+            \end{multicols}
+          \end{minipage}
+        \end{center}
+      \end{frame}
+      \egroup
+    }
+  }{}%
+}
+
+\ExplSyntaxOn
+\tl_new:N \l_delaunaypointlist_tl
+\NewDocumentCommand\ingress@buildpoints{}{
+  \tl_clear:N \l_delaunaypointlist_tl
+  \int_set:Nn \l_tmpa_int { 1 }
+  \tl_put_right:Nn \l_delaunaypointlist_tl {(0,0);(16,0);(16,9);(0,9);}
+  \int_do_while:nNnn { \l_tmpa_int} < {40}
+  {
+    \tl_put_right:Nn \l_delaunaypointlist_tl {(\fpeval{16*rand()},\fpeval{9*rand()});}
+    \int_incr:N \l_tmpa_int
+  }
+  \tl_put_right:Nn \l_delaunaypointlist_tl {(\fpeval{16*rand()},\fpeval{9*rand()})}
+}
+\NewExpandableDocumentCommand\ingress@buildmesh{}{
+  \node[anchor = south~west] at
+  ([xshift=-10pt,yshift=-5pt]current~page.south~west)
+  {\resizebox{1.0\paperwidth}{1.0\paperheight}
+    {\buildMeshBW[color=myBlue!15,colorBbox=myBlue!15,scale=2cm]{\l_delaunaypointlist_tl}}};
+}
+\defbeamertemplate{background}{ingress}{
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[white]
+    ([yshift=0pt]current page.south west) rectangle (current page.north east);
+    \color{myBlue}
+    \ingress@buildpoints
+    \ingress@buildmesh
+  \end{tikzpicture}
+}
+\ExplSyntaxOff
+
 #+end_src
 
 * Beamer関係
+:PROPERTIES:
+:ID:       19F020D9-F9AA-46B6-9920-BF8269BD17E2
+:END:
 
   昔の設定
 \setlength{\metropolis@titleseparator@linewidth}{1.0pt}%1pt
@@ -316,10 +542,10 @@ version={4.0},
 
 %% Progress Bar
 \setbeamercolor{progress bar}{%
-  fg=myPurple,
+  fg=myDarkPurple,
   bg=myPalePurple
 }
-  
+
 #+begin_src latex
 %%% 
 %%% Base Theme 
@@ -329,9 +555,9 @@ titleformat=smallcaps,%
 outer/numbering=fraction,%
 outer/progressbar=frametitle]%
 {metropolis}
-\setlength{\metropolis@titleseparator@linewidth}{0.4pt}
-\setlength{\metropolis@progressonsectionpage@linewidth}{0.4pt}%1pt
-\setlength{\metropolis@progressinheadfoot@linewidth}{0.9pt}
+\setlength{\metropolis@titleseparator@linewidth}{2pt}%2pt
+\setlength{\metropolis@progressonsectionpage@linewidth}{2pt}%2pt
+\setlength{\metropolis@progressinheadfoot@linewidth}{2pt}%1.6pt
 
 %%% 
 %%% Colors
@@ -357,6 +583,12 @@ outer/progressbar=frametitle]%
 \setbeamercolor{title}{parent=normal text,fg=myDarkBlue}
 \setbeamercolor{subtitle}{fg=myBlue}
 \setbeamercolor{institute}{parent=normal text}
+\setbeamertemplate{title separator}{
+  \begin{tikzpicture}
+    \fill[myPurple] (0,0) rectangle (\textwidth, \metropolis@titleseparator@linewidth);
+  \end{tikzpicture}%
+  \par%
+}
 
 %% Content
 \setbeamercolor{frametitle}{fg=myDarkBlue,bg=normal text.bg}
@@ -399,11 +631,11 @@ outer/progressbar=frametitle]%
 }
 \newcommand{\mytalk@blockstyle@color}{%
   \setbeamercolor{block title}{fg=white,bg=myBlue}
-  \setbeamercolor{block body}{fg=myGrey, bg=myPaleBlue}
+  \setbeamercolor{block body}{fg=myDarkGrey,bg=myBlue!5!white}
   \setbeamercolor{block title example}{fg=white, bg=myGreen}
-  \setbeamercolor{block body example}{fg=myGrey, bg=myPaleGreen}
+  \setbeamercolor{block body example}{fg=myDarkGrey, bg=myGreen!5!white}
   \setbeamercolor{block title alerted}{fg=white, bg=myOrange}
-  \setbeamercolor{block body alerted}{fg=myGrey, bg=myPaleOrange}
+  \setbeamercolor{block body alerted}{fg=myDarkGrey, bg=myOrange!5!white}
 }
 \newcommand{\mytalk@blockstyle@none}{%
   \setbeamercolor{block title}{%
@@ -475,7 +707,7 @@ outer/progressbar=frametitle]%
 
 %% Progress Bar
 \setbeamercolor{progress bar}{%
-  fg=myDarkPurple,
+  fg=myPurple,
   bg=myLightPurple
 }
 
@@ -502,7 +734,8 @@ outer/progressbar=frametitle]%
 
 \RequirePackage{tcolorbox}
 \newtcbox{\mybox}[1][red]{on line,
-  arc=3pt,colback=#1!50!white,colframe=#1!90!black,
+  arc=1pt,colback=#1!30,colframe=#1!10,
+  %arc=3pt,colback=#1!50!white,colframe=#1!90!black,
   boxrule=.5pt,boxsep=0pt,
   left=0pt,right=0pt,top=-1pt,bottom=-.5pt
 }
@@ -650,6 +883,9 @@ outer/progressbar=frametitle]%
 #+end_src
 
 * スタイル設定
+:PROPERTIES:
+:ID:       F1D92495-806F-4F6D-B9D1-99D900BB9749
+:END:
 #+begin_src latex
 %%% set page style and layout
 \myFontStyle{\mytalk@font}
@@ -657,8 +893,12 @@ outer/progressbar=frametitle]%
 \myHeadStyle{\mytalk@header}
 \myFootStyle{\mytalk@footer}
 \myBlockStyle{\mytalk@block}
+\myTocStyle{\mytalk@toc}
 #+end_src
 * フッタ
+:PROPERTIES:
+:ID:       F6D6DADE-2AE1-40ED-AA9E-AB66AE2E3EAE
+:END:
 #+begin_src latex
 %%
 \endinput

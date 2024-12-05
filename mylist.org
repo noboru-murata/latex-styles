@@ -1,7 +1,7 @@
 #+TITLE: My Listing Style
 #+AUTHOR: Noboru Murata
 #+EMAIL: noboru.murata@gmail.com
-#+DATE: 2020.09.04 15:20:18
+#+DATE: 2023.10.05 16:35:57
 #+STARTUP: hidestars content
 #+OPTIONS: date:t H:4 num:nil toc:nil \n:nil
 #+OPTIONS: @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:t 
@@ -10,12 +10,18 @@
 # C-c C-v t tangle
 
 * ヘッダ
+:PROPERTIES:
+:ID:       EA355DEA-09E0-41B9-B94D-FAC1A8BFED44
+:END:
 #+begin_src latex
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesPackage{mylist}[2020/03/20, mura's list style version 1.0]
 #+end_src  
 
 * オプション処理
+:PROPERTIES:
+:ID:       F78F795C-30DC-4F78-94C4-C4C49EB48BAD
+:END:
 #+begin_src latex
 %%% utility
 \RequirePackage{xparse}
@@ -37,6 +43,9 @@
 #+end_src
 
 * listing関連
+:PROPERTIES:
+:ID:       E85C548D-20EB-4F98-A909-A60FCFF0CBCA
+:END:
 #+begin_src latex
 %%% simple listings for ox-latex
 \ifdefstring{\mylist@list}{minted}{%
@@ -44,7 +53,7 @@
   \RequirePackage{mdframed}
   \surroundwithmdframed[%
   font=\small, %
-  backgroundcolor=myPaleOrange, %
+  backgroundcolor=myOrange!20!white, %
   linewidth=0pt, %
   ]{minted}
 }{}%
@@ -89,6 +98,9 @@ listings は koma の marginpar/sidenote と conflict するので注意
 koma は minted との方が相性が良い
 
 * R/Sweave環境
+:PROPERTIES:
+:ID:       4A75BAE2-0C7B-413C-9D78-5C7E5B606593
+:END:
 #+begin_src latex
 %%% including R scripts and graphics
 \RequirePackage{xparse}
@@ -136,6 +148,9 @@ koma は minted との方が相性が良い
 #+end_src  
 
 * PDFファイル処理
+:PROPERTIES:
+:ID:       C66B7F7D-A0A0-4375-A115-4361FC2BC6AD
+:END:
 #+begin_src latex
 %%% PDF file handling
 \newcounter{GraphPage}
@@ -172,6 +187,9 @@ koma は minted との方が相性が良い
 #+end_src
 
 * フッタ
+:PROPERTIES:
+:ID:       F1CCE7D4-5219-4156-AA2D-8E331607C4AF
+:END:
 #+begin_src latex
 %% 
 \endinput

@@ -1,8 +1,8 @@
 #+TITLE: My Handout Style
 #+AUTHOR: Noboru Murata
 #+EMAIL: noboru.murata@gmail.com
-#+DATE: 2021.12.03 14:54:47
-#+STARTUP: hidestars content
+#+DATE: 2024.07.05 10:48:28
+#+STARTUP: hidestars content indent
 #+OPTIONS: date:t H:4 num:nil toc:nil \n:nil
 #+OPTIONS: @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:t 
 #+OPTIONS: skip:nil d:nil todo:t pri:nil tags:not-in-toc
@@ -10,12 +10,18 @@
 # C-c C-v t tangle
 
 * ヘッダ
+:PROPERTIES:
+:ID:       7860A875-78E1-4261-821D-83379D027C4B
+:END:
 #+begin_src latex
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesPackage{myhandout}[2020/02/25, mura's handout style 1.0]
+\ProvidesPackage{myhandout}[2024/07/05, mura's handout style 1.1]
 #+end_src
 
 * オプション処理
+:PROPERTIES:
+:ID:       34540BC0-A85F-4972-8F3A-381B617CEDAC
+:END:
 #+begin_src latex
 %%% utility
 \RequirePackage{xparse}
@@ -71,7 +77,21 @@
 %% \RequirePackage{ifthen} % obsolete
 %% \RequirePackage{regexpatch} % experimental
 
+* 自作関数・定義
+:PROPERTIES:
+:ID:       9CCD8D6E-9E10-4E17-90B3-024DA8E5E936
+:END:
+#+begin_src latex
+%%% my default definitions
+\RequirePackage{mycolor}
+\RequirePackage[lang=\myhandout@lang,face=\myhandout@face]{mymath} 
+\RequirePackage[list=\myhandout@list]{mylist}
+#+end_src
+
 * 言語
+:PROPERTIES:
+:ID:       A9F18F66-03E6-4B33-A1D7-7E45C3F3E8EA
+:END:
 #+begin_src latex
 %%% language/encoding
 % \RequirePackage{textcomp} % latex3 encoding
@@ -87,23 +107,34 @@
 \RequirePackage{polyglossia} % まだ若干あやしい
 
 %%% parse language
-%% for non-japanese
 \setdefaultlanguage{english}
-\setotherlanguage{japanese}
+% \setotherlanguage{japanese} 
 
 \ifdefstring{\myhandout@lang}{jp}{ % for japanese
   \RequirePackage[hiragino-pron]{luatexja-preset}
   \setlength\parindent{1\zw}
-  \setdefaultlanguage{japanese}
-  \let\japanese@capsformat=\relax % 余計なことはさせない
-  \setotherlanguage{english}
+  \setotherlanguage{japanese} % 基本は英語，必要に応じて日本語
+  % 2024/4 cjkfont 回りの対応，いずれ消したい
+  \let\cjkfont=\rmfamily
+  \let\cjkfontsf=\sffamily
+  \let\cjkfonttt=\ttfamily
+  \newfontfamily\cjkfontmg{HiraMaruProN-W4}
+  % \setdefaultlanguage{japanese}
+  % \let\japanese@capsformat=\relax % 余計なことはさせない(いらなくなったっぽい 2024/4)
+  % \setotherlanguage{english}
 }{}
 \ifdefstring{\myhandout@lang}{ja}{ % for yet another japanese
   \RequirePackage[deluxe]{luatexja-preset} 
   \setlength\parindent{1\zw}
-  \setdefaultlanguage{japanese} % for polyglossia
-  \let\japanese@capsformat=\relax % 余計なことはさせない
-  \setotherlanguage{english} % for polyglossia
+  \setotherlanguage{japanese} % 基本は英語，必要に応じて日本語
+  % 2024/4 cjkfont 回りの対応，いずれ消したい
+  \let\cjkfont=\rmfamily
+  \let\cjkfontsf=\sffamily
+  \let\cjkfonttt=\ttfamily
+  \newfontfamily\cjkfontmg{HiraMaruProN-W4}
+  % \setdefaultlanguage{japanese} % for polyglossia
+  % \let\japanese@capsformat=\relax % 余計なことはさせない
+  % \setotherlanguage{english} % for polyglossia
 }{}
 #+end_src
 
@@ -122,15 +153,10 @@
 #   \setotherlanguage{japanese}
 # }
 
-* 自作関数・定義
-#+begin_src latex
-%%% my default definitions
-\RequirePackage{mycolor}
-\RequirePackage[lang=\myhandout@lang,face=\myhandout@face]{mymath} 
-\RequirePackage[list=\myhandout@list]{mylist}
-#+end_src
-
 * ハイパーリンク 
+:PROPERTIES:
+:ID:       122145E8-D8FE-4D12-9D9F-A85AC4C0CC74
+:END:
 #+begin_src latex
 %%% index/hyperlink
 \RequirePackage{makeidx}
@@ -154,6 +180,9 @@
 }
 #+end_src
 * グラフィクス
+:PROPERTIES:
+:ID:       70AB2BE8-0EDF-4B30-A4B2-0FD639802401
+:END:
 #+begin_src latex
 %%% graphics
 \RequirePackage{grffile} % graphics file 名の拡張
@@ -164,6 +193,9 @@
 # \graphicspath{{example/},{fig/}}
 
 * 設定関数
+:PROPERTIES:
+:ID:       D36E0ED1-D54B-494B-9C92-808259885B4E
+:END:
 #+begin_src latex
 %%% page, title and font styles
 %% load tufte setup
@@ -212,11 +244,11 @@
   \ifdefstring{\my@rg}{regular}{%
     \ifundef{\mgfamily}%
     {\def\mgfamily{\jfontspec{HiraMaruProN-W4}}}{} % for MacOS X
-    \setkomafont{subject}{\mgfamily\itshape}
-    \setkomafont{title}{\mgfamily\itshape}
-    \setkomafont{subtitle}{\mgfamily\itshape}
-    \setkomafont{author}{\mgfamily\itshape}
-    \setkomafont{date}{\mgfamily\itshape}
+    \setkomafont{subject}{\mgfamily\cjkfontmg\itshape}
+    \setkomafont{title}{\mgfamily\cjkfontmg\itshape}
+    \setkomafont{subtitle}{\mgfamily\cjkfontmg\itshape}
+    \setkomafont{author}{\mgfamily\cjkfontmg\itshape}
+    \setkomafont{date}{\mgfamily\cjkfontmg\itshape}
     \relax
   }{}%
   \ifdefstring{\my@rg}{light}{%
@@ -233,6 +265,9 @@
 #+end_src
 
 * スタイル設定
+:PROPERTIES:
+:ID:       B6DE5734-CD26-4A06-95D5-6564FB8CC172
+:END:
 #+begin_src latex
 %%% set page style and layout
 \myStyle{\myhandout@style}
@@ -241,6 +276,9 @@
 #+end_src
 
 * フッタ
+:PROPERTIES:
+:ID:       4C5A55AE-54CB-4D55-BD55-21FFD891C72B
+:END:
 #+begin_src latex
 %%
 \endinput

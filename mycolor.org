@@ -1,7 +1,7 @@
 #+TITLE: My Color Style
 #+AUTHOR: Noboru Murata
 #+EMAIL: noboru.murata@gmail.com
-#+DATE: 2022.02.02 00:04:12
+#+DATE: 2024.08.08 11:16:23
 #+STARTUP: hidestars content
 #+OPTIONS: date:t H:4 num:nil toc:nil \n:nil
 #+OPTIONS: @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:t 
@@ -12,7 +12,7 @@
 * ヘッダ
 #+begin_src latex
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesPackage{mycolor}[2019/04/09, mura's color style version 1.0]
+\ProvidesPackage{mycolor}[2024/08/08, mura's color style version 2.0]
 #+end_src
 
 * 色の定義
@@ -56,13 +56,13 @@
 \RequirePackage{xcolor-material}
 
 %%% define private colors
-\definecolor{myDarkRed}{named}{\XCM@prefix Red900}
-\definecolor{myRed}{named}{\XCM@prefix Red600}
+\definecolor{myDarkRed}{named}{\XCM@prefix Red700}
+\definecolor{myRed}{named}{\XCM@prefix Red500}
 \definecolor{myLightRed}{named}{\XCM@prefix Red300}
 \definecolor{myPaleRed}{named}{\XCM@prefix Red100}
-\definecolor{myDarkBlue}{named}{\XCM@prefix Indigo900}
-\definecolor{myBlue}{named}{\XCM@prefix Indigo600}
-\definecolor{myLightBlue}{named}{\XCM@prefix Indigo300}
+\definecolor{myDarkBlue}{named}{\XCM@prefix Indigo700}
+\definecolor{myBlue}{named}{\XCM@prefix Indigo500}
+\definecolor{myLightBlue}{named}{\XCM@prefix IndigoA100}
 \definecolor{myPaleBlue}{named}{\XCM@prefix Indigo100}
 \definecolor{myDarkGreen}{named}{\XCM@prefix GreenA700}
 \definecolor{myGreen}{named}{\XCM@prefix GreenA400}
@@ -76,10 +76,10 @@
 \definecolor{myOrange}{named}{\XCM@prefix OrangeA400}
 \definecolor{myLightOrange}{named}{\XCM@prefix OrangeA200}
 \definecolor{myPaleOrange}{named}{\XCM@prefix OrangeA100}
-\definecolor{myDarkPurple}{named}{\XCM@prefix Purple900}
-\definecolor{myPurple}{named}{\XCM@prefix Purple600}
-\definecolor{myLightPurple}{named}{\XCM@prefix Purple300}
-\definecolor{myPalePurple}{named}{\XCM@prefix Purple100}
+\definecolor{myDarkPurple}{named}{\XCM@prefix DeepPurple700}
+\definecolor{myPurple}{named}{\XCM@prefix DeepPurple500}
+\definecolor{myLightPurple}{named}{\XCM@prefix DeepPurpleA100}
+\definecolor{myPalePurple}{named}{\XCM@prefix DeepPurple100}
 \definecolor{myDarkYellow}{named}{\XCM@prefix YellowA700}
 \definecolor{myYellow}{named}{\XCM@prefix YellowA400}
 \definecolor{myLightYellow}{named}{\XCM@prefix YellowA200}

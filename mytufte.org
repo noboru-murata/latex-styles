@@ -1,7 +1,7 @@
 #+TITLE: My Tufte Style
 #+AUTHOR: Noboru Murata
 #+EMAIL: noboru.murata@gmail.com
-#+DATE: 2020.08.22 16:02:46
+#+DATE: 2024.07.03 12:29:33
 #+STARTUP: hidestars content
 #+OPTIONS: date:t H:4 num:nil toc:nil \n:nil
 #+OPTIONS: @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:t 
@@ -82,7 +82,7 @@
 %% large margins
 \newcommand{\marginlayout}{%
   \newgeometry{
-    a4paper,
+    layout=a4paper,
     top=27.4mm,
     bottom=27.4mm,
     inner=24.8mm,
@@ -96,7 +96,7 @@
 %% no margins at all
 \newcommand{\widelayout}{%
   \newgeometry{
-    a4paper,
+    layout=a4paper,
     top=27.4mm,
     bottom=27.4mm,
     inner=24.8mm,
@@ -110,7 +110,7 @@
 %% no margins and no space above or below the body
 \newcommand{\fullwidthpage}{%
   \newgeometry{
-    a4paper,
+    layout=a4paper,
     top=0cm,
     bottom=0cm,
     inner=0cm,
