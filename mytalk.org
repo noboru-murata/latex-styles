@@ -1,7 +1,7 @@
 #+TITLE: My Talk Style
 #+AUTHOR: Noboru Murata
 #+EMAIL: noboru.murata@gmail.com
-#+DATE: 2024.09.01 21:25:23
+#+DATE: 2025.12.10 11:04:47
 #+STARTUP: hidestars content
 #+OPTIONS: date:t H:4 num:nil toc:nil \n:nil
 #+OPTIONS: @:t ::t |:t ^:t -:t f:t *:t TeX:t LaTeX:t 
@@ -555,9 +555,9 @@ titleformat=smallcaps,%
 outer/numbering=fraction,%
 outer/progressbar=frametitle]%
 {metropolis}
-\setlength{\metropolis@titleseparator@linewidth}{2pt}%2pt
-\setlength{\metropolis@progressonsectionpage@linewidth}{2pt}%2pt
-\setlength{\metropolis@progressinheadfoot@linewidth}{2pt}%1.6pt
+\setlength{\metropolis@titleseparator@linewidth}{1pt}%2pt title page
+\setlength{\metropolis@progressonsectionpage@linewidth}{1pt}%2pt
+\setlength{\metropolis@progressinheadfoot@linewidth}{.6pt}%1.6pt
 
 %%% 
 %%% Colors
@@ -606,17 +606,41 @@ outer/progressbar=frametitle]%
     rightskip=\metropolis@frametitle@padding,%
     ]{frametitle}%
     \metropolis@frametitlestrut@start%
-    \insertMyLogo\hfill\insertframetitle%
+    \hfill\insertframetitle%
+%    \insertMyLogo\hfill\insertframetitle%
     \nolinebreak%
     \metropolis@frametitlestrut@end%
   \end{beamercolorbox}%
 }
-% \setbeamertemplate{frametitle}[right]
-\addtobeamertemplate{frametitle}{}{%
-  \usebeamertemplate*{progress bar in head/foot}
+\newlength{\my@bar@linewidth}
+\newlength{\my@bar@padding}
+\newlength{\my@bar@width}
+\newlength{\my@bar@end}
+\newlength{\my@bar@progress}
+\setlength{\my@bar@linewidth}{\metropolis@progressinheadfoot@linewidth}
+\setlength{\my@bar@padding}{\metropolis@frametitle@padding}
+\setlength{\my@bar@width}{\paperwidth - 2\my@bar@padding}
+\setlength{\my@bar@end}{\paperwidth - \my@bar@padding}
+\setbeamertemplate{my progress bar}{
+  \nointerlineskip
+  \usebeamercolor{progress bar}
+  \setlength{\my@bar@progress}{%
+    \my@bar@padding + \my@bar@width * \ratio{\insertframenumber pt}{\inserttotalframenumber pt}%
+  }%
+  \begin{beamercolorbox}[wd=\paperwidth]{my progress bar}
+    \begin{tikzpicture}
+      \fill[normal text.bg] (0,0) rectangle (\paperwidth, \my@bar@linewidth);
+      \fill[bg] (\my@bar@padding,0) rectangle (\my@bar@end, \my@bar@linewidth);
+      \fill[fg] (\my@bar@padding,0) rectangle (\my@bar@progress, \my@bar@linewidth);
+    \end{tikzpicture}%
+  \end{beamercolorbox}
 }
 \addtobeamertemplate{frametitle}{}{%
-  \hfill\insertframesubtitle%
+  \usebeamertemplate*{my progress bar}
+}
+\addtobeamertemplate{frametitle}{}{%
+  \insertMyLogo\hfill\insertframesubtitle%
+%  \hfill\insertframesubtitle%
   \nolinebreak%
 }
 
